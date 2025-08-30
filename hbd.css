@@ -1,0 +1,125 @@
+@import url("https://fonts.googleapis.com/css?family=Allan:700,400");
+
+html, body { width:100%; height:100%; }
+body{
+  margin:0;
+  background: mistyrose;
+  perspective:800px;
+  overflow:hidden;
+  font-family:"Allan", sans-serif;
+  color:#1F1F1F;
+}
+
+/* ===== Envelope ===== */
+.envelope{
+  position: fixed;            /* ثابت في الشاشة */
+  z-index: 2;
+  width: 550px; height: 366.6667px;
+  top: 50%; left: 50%;
+  margin-left: -275px;        /* توسيط بالطريقة القديمة ليتوافق مع الأنيميشن */
+  margin-top: -183.3333px;
+  transform-style: preserve-3d;
+  transform-origin: right center;
+  transition: transform 1s ease;
+}
+.envelope .front, .envelope .back{
+  position:absolute; inset:0;
+  background:#fff; border-radius:6px;
+  box-shadow:0 0 30px -5px #fbc0b9eb;
+}
+
+/* Front */
+.envelope .front{ backface-visibility:hidden; cursor:pointer; display:table; }
+.envelope .front .mail{ display:table-cell; vertical-align:middle; text-align:center; }
+.envelope .front .mail p{ margin:0; font-weight:bold; }
+.envelope .front .mail p:first-child{ font-size:50px; line-height:50px; color:#ff4f5f; }
+.envelope .front .mail p:last-child{ font-size:26px; color:#444; }
+
+/* Back + flaps */
+.envelope .back{ transform:rotateY(180deg) translateZ(1px); }
+.envelope .back .flip{ position:absolute; inset:0; overflow:hidden; }
+.envelope .back .flip:before{
+  content:""; position:absolute; background:#fff; box-shadow:0 0 100px #f5c1bc52;
+}
+.envelope .back .top-flip{ z-index:5; transform-origin:top center; }
+.envelope .back .top-flip:before{
+  width:388.9px; height:388.9px; transform-origin:top left; transform:rotate(-45deg);
+  border-bottom-left-radius:50px; border-top-left-radius:10px; border-bottom-right-radius:10px;
+}
+.envelope .back .left-flip{ z-index:3; }
+.envelope .back .left-flip:before{
+  width:269.27px; height:269.27px; top:-5px; transform-origin:top left; transform:rotate(45deg);
+  border-top-left-radius:20px; border-bottom-right-radius:30px; border-top-right-radius:5px;
+}
+.envelope .back .right-flip{ z-index:2; }
+.envelope .back .right-flip:before{
+  width:269.27px; height:269.27px; top:-5px; right:0; transform-origin:top right; transform:rotate(-45deg);
+  border-top-right-radius:20px; border-bottom-left-radius:30px; border-top-left-radius:5px;
+}
+.envelope .back .bottom-flip:before{
+  width:388.9px; height:388.9px; transform-origin:left bottom; transform:rotate(45deg) translate(-15px,-15px);
+  border-top-left-radius:100px; border-bottom-left-radius:10px; border-top-right-radius:10px;
+}
+
+/* Cover that hides content behind the back side (visual only) */
+.envelope .back .seal{
+  position: absolute;
+  top: 20px; left: 20px; right: 20px; bottom: 20px;
+  background: #fff;
+  border-radius: 6px;
+  box-shadow: inset 0 0 25px rgba(0,0,0,.05);
+  z-index: 4;
+  transition: opacity .35s ease .8s;
+}
+.envelope.open .back .seal{ opacity:0; }
+
+/* ===== Letter (independent & fixed center) ===== */
+.letter{
+  position: fixed; z-index: 1;   /* تحت الظرف قبل الفتح */
+  top: 50%; left: 50%;
+  transform: translate(-50%,-50%) scale(.98);
+  width: 530px;
+  max-height: calc(100vh - 60px);
+  background: #fff;
+  border-radius: 6px;
+  padding: 20px 30px;
+  box-shadow: 0 1px 100px #fbc0b9eb;
+  text-align: center;
+  line-height: 1.6;
+  font-size: 20px;
+  color: #ff4f5f;
+  white-space: pre-line;
+  word-break: break-word;
+  overflow: auto;
+
+  opacity: 0;                  /* مخفية افتراضياً */
+  pointer-events: none;        /* لا تُضغط قبل الفتح */
+  transition: opacity .6s ease, transform .6s ease, z-index .01s linear .6s;
+}
+.letter .gift{ margin-top: 12px; color:#222; font-weight:700; letter-spacing:1px; }
+
+/* بعد فتح الظرف: الرسالة فوق وتظهر */
+.envelope.open ~ .letter{
+  z-index: 5;
+  opacity: 1;
+  pointer-events: auto;
+  transform: translate(-50%,-50%) scale(1);
+}
+
+/* ===== States & animations for envelope ===== */
+.envelope.new{ animation:new 1s forwards; }
+.envelope.open{ animation:open 3s forwards; }
+.envelope.open .top-flip{ animation:flip-open 1s 1s forwards; }
+
+@keyframes new{
+  0%{ left:0%; margin-left:-550px; }
+  100%{ left:50%; margin-left:-275px; }
+}
+@keyframes open{
+  0%{ transform:translate3d(0,0,0) rotateY(0); }
+  33.33%{ transform:translate3d(-100%,0,0) rotateY(-180deg); }
+  66.66%{ transform:translate3d(-100%,0,0) rotateY(-180deg); }
+  100%{ transform:translate3d(-100%,733.3333px,0) rotateY(-180deg); } /* الظرف ينسحب لتحت */
+}
+@keyframes flip-open{
+  0%{ transform:
